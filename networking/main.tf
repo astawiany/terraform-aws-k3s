@@ -1,6 +1,13 @@
+data "aws_availability_zones" "available" {}
+
 resource "random_integer" "random" {
   min = 1
   max = 100
+}
+
+resource "random_shuffle" "az_list" {
+  input = data.aws_availability_zones.available.names
+  result_count = var.max_subnets
 }
 
 resource "aws_vpc" "tf_vpc" {
@@ -14,22 +21,22 @@ resource "aws_vpc" "tf_vpc" {
 }
 
 resource "aws_subnet" "tf_public_subnet" {
-  count = length(var.public_cidrs)
+  count = var.public_sn_count
   vpc_id = aws_vpc.tf_vpc.id
   cidr_block = var.public_cidrs[count.index]
   map_public_ip_on_launch = true
-  availability_zone = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"][count.index]
+  availability_zone = random_shuffle.az_list.result[count.index]
   tags = {
     Name = "tf_public_${count.index + 1}"
   }
 }
 
 resource "aws_subnet" "tf_private_subnet" {
-  count = length(var.private_cidrs)
+  count = var.private_sn_count
   vpc_id = aws_vpc.tf_vpc.id
   cidr_block = var.private_cidrs[count.index]
   map_public_ip_on_launch = false
-  availability_zone = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d"][count.index]
+  availability_zone = random_shuffle.az_list.result[count.index]
   tags = {
     Name = "tf_private_${count.index + 1}"
   }
