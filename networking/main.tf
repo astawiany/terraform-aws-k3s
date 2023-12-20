@@ -18,6 +18,9 @@ resource "aws_vpc" "tf_vpc" {
     tags = {
         Name = "terraform_vpc-${random_integer.random.id}"
     }
+    lifecycle {
+      create_before_destroy = true
+    }
 }
 
 resource "aws_subnet" "tf_public_subnet" {
