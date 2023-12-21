@@ -78,3 +78,36 @@ resource "aws_default_route_table" "tf_private_rt" {
     Name = "tf_private_rt"
   }
 }
+
+resource "aws_security_group" "tf_sg" {
+  for_each = var.security_groups
+  name = each.value.name
+  description = each.value.description
+  vpc_id = aws_vpc.tf_vpc.id
+
+  dynamic "ingress" {
+    for_each = each.value.ingress
+    content {
+        from_port = ingress.value.from
+        to_port = ingress.value.to
+        protocol = ingress.value.protocol
+        cidr_blocks = ingress.value.cidr_blocks
+    }
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_db_subnet_group" "tf_rds_sn_group" {
+  count = var.db_subnet_group == true ? 1 : 0
+  name = "tf_rds_sn_group"
+  subnet_ids = aws_subnet.tf_private_subnet.*.id
+  tags = {
+    Name = "tf_rds_sng"
+  }
+}
