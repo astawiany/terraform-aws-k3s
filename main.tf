@@ -38,3 +38,19 @@ module "loadbalancing" {
   listener_port           = 80
   listener_protocol       = "HTTP"
 }
+
+module "compute" {
+  source          = "./compute"
+  instance_count  = 1
+  instance_type   = "t3.micro"
+  public_sg       = module.networking.public_sg
+  public_subnets  = module.networking.public_subnets
+  vol_size        = 10
+  key_name        = "tf-public-key"
+  public_key_path = var.public_key_path
+  user_data_path = "${path.root}/userdata.tpl"
+  db_name = var.dbname
+  db_user = var.dbuser
+  db_password = var.dbpassword
+  db_endpoint = module.database.db_endpoint
+}
