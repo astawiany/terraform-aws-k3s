@@ -1,4 +1,3 @@
-sleep 60
 scp -i ${public_key} \
 -o StrictHostKeyChecking=no \
 -o UserKnownHostsFile=/dev/null \

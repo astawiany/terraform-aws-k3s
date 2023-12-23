@@ -42,6 +42,15 @@ resource "aws_instance" "tf_node" {
   root_block_device {
     volume_size = var.vol_size
   }
+  provisioner "remote-exec" {
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      host = self.public_ip
+      private_key = file(trimsuffix(var.public_key_path, ".pub"))
+    }
+    script = "${path.cwd}/wait_for_bootstrap.sh"
+  }
   provisioner "local-exec" {
     command = templatefile("${path.cwd}/scp_script.tpl", {
       public_key = trimsuffix(var.public_key_path, ".pub")
