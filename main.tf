@@ -28,7 +28,7 @@ module "loadbalancing" {
   source                  = "./loadbalancing"
   public_sg               = module.networking.public_sg
   public_subnets          = module.networking.public_subnets
-  tg_port                 = 80
+  tg_port                 = 8000
   tg_protocol             = "HTTP"
   vpc_id                  = module.networking.vpc_id
   lb_healthy_threshold    = 2
@@ -42,7 +42,7 @@ module "loadbalancing" {
 module "compute" {
   source          = "./compute"
   instance_count  = 1
-  instance_type   = "t3.micro"
+  instance_type   = "t2.micro"
   public_sg       = module.networking.public_sg
   public_subnets  = module.networking.public_subnets
   vol_size        = 10
@@ -53,4 +53,6 @@ module "compute" {
   db_user = var.dbuser
   db_password = var.dbpassword
   db_endpoint = module.database.db_endpoint
+  lb_target_group_arn = module.loadbalancing.lb_target_group_arn
+  tg_port = 8000
 }

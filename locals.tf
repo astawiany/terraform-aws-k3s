@@ -14,9 +14,21 @@ locals {
                 protocol = "tcp"
                 cidr_blocks = [var.access_ip]
             }
+            kube = {
+                from = 8443
+                to = 8443
+                protocol = "tcp"
+                cidr_blocks = [var.access_ip]
+            }
             http = {
                 from = 80
                 to = 80
+                protocol = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+            }
+            nginx = {
+                from = 8000
+                to = 8000
                 protocol = "tcp"
                 cidr_blocks = ["0.0.0.0/0"]
             }

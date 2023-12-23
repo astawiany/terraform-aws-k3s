@@ -42,4 +42,19 @@ resource "aws_instance" "tf_node" {
   root_block_device {
     volume_size = var.vol_size
   }
+  provisioner "local-exec" {
+    command = templatefile("${path.cwd}/scp_script.tpl", {
+      public_key = trimsuffix(var.public_key_path, ".pub")
+      nodeip = self.public_ip
+      k3s_path = "${path.cwd}"
+      nodename = self.tags.Name
+    })
+  }
+}
+
+resource "aws_alb_target_group_attachment" "tf_tg_attachment" {
+  count = var.instance_count
+  target_group_arn = var.lb_target_group_arn
+  target_id = aws_instance.tf_node[count.index].id
+  port = var.tg_port
 }
