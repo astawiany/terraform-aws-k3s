@@ -47,7 +47,7 @@ resource "aws_instance" "tf_node" {
       type = "ssh"
       user = "ubuntu"
       host = self.public_ip
-      private_key = file(trimsuffix(var.public_key_path, ".pub"))
+      private_key = file(var.private_key_path)
     }
     script = "${path.cwd}/wait_for_bootstrap.sh"
   }
@@ -58,6 +58,10 @@ resource "aws_instance" "tf_node" {
       k3s_path = "${path.cwd}"
       nodename = self.tags.Name
     })
+  }
+  provisioner "local-exec" {
+    command = "rm -rf ${path.cwd}/k3s-tf-node-*.yaml"
+    when = destroy
   }
 }
 

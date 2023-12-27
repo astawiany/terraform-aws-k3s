@@ -15,6 +15,9 @@ variable "public_key_path" {
     error_message = "Specify a public key - file ending with .pub"
   }
 }
+variable "private_key_path" {
+  description = "Path to the SSH private key"
+}
 variable "user_data_path" {
   description = "Path to the user data template"
 }

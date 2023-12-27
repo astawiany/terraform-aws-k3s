@@ -48,6 +48,7 @@ module "compute" {
   vol_size        = 10
   key_name        = "tf-public-key"
   public_key_path = var.public_key_path
+  private_key_path = var.private_key_path
   user_data_path = "${path.root}/userdata.tpl"
   db_name = var.dbname
   db_user = var.dbuser
